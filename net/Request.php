@@ -4,9 +4,9 @@ class Request{
 	private $headers;
 	private $params;
 
-	public function __construct($headers, $params=NULL){
+	public function __construct($headers, $params){
 		$this->type=$_SERVER['REQUEST_METHOD'];
-		$this->header=$headers;
+		$this->headers=$headers;
 		$this->params=$params;
 	}
 	public function getType(){
