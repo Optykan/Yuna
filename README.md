@@ -75,13 +75,16 @@ Yuna will take the variable name within the brackets, and will pass it to the `R
 #Miscellaneous
 
 ###The Request object
+This object contains everything that you could possibly need (and less!) to know about the request.
 
 `public function getType();`        returns the HTTP method used for the request (GET, POST, PUT, etc.)
+
 `public function getHeaders();`     returns the HTTP request headers
+
 `public function getParams();`      returns all the parameters in an array. Right now just an array of 1.
+
 `public function getParam($param);` returns the value of the parameter encoded in the route. Like `/foo/{bar}`, returns the value of `bar`;
 
-This object contains everything that you could possibly need (and less!) to know about the request.
 
 
 #Thanks!
