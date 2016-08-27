@@ -83,7 +83,7 @@ This object contains everything that you could possibly need (and less!) to know
 
 `public function getParams();`      returns all the parameters in an array. Right now just an array of 1.
 
-`public function getParam($param);` returns the value of the parameter encoded in the route. Like `/foo/{bar}`, returns the value of `bar`;
+`public function getParam($param);` returns the value of the parameter encoded in the route. Like for the route `/foo/{bar}`, `$request->getParam('bar')` returns the value of `bar`;
 
 
 
