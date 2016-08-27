@@ -2,9 +2,7 @@
 require_once 'net/Request.php';
 class Yuna{
 	private static $routes=array();
-
-	private static $version='0.0.1';
-
+	private static $version='0.1.0';
 	private static $warnings=array();
 
 	private static function Warn($message){

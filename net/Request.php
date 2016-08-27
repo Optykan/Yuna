@@ -18,5 +18,8 @@ class Request{
 	public function getParams(){
 		return $this->params;
 	}
+	public function getParam($param){
+		return $this->params[$param] ?: NULL;
+	}
 }
 ?>
