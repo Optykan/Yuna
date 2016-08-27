@@ -33,7 +33,7 @@ Yuna::Route('/your/route/here', function(){
 });
 ```
 
-The response when visiting `http://your.server/your/route/here` will be a `json_encoded` representation of what is returned from that function.
+The response when visiting `http://your.server/your/route/here` will be a `json_encode`d representation of what is returned from that function.
 In this case, the response would be:
 
 ```

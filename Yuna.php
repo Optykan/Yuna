@@ -17,65 +17,6 @@ class Yuna{
 		exit(0);
 	}
 
-	private static function FindCallback($routes, $route){
-		// where $routes is the list of all routes, and
-		//       $route  is the requested route
-		//in the array, search for the value that matches the path
-		//this function does not support putting the handlebars anywhere but at the end
-		# /foo/bar/baz => ['foo']['bar']['baz']
-		# /foo/bar/1   => ['foo']['bar']['{user}']
-
-		$route=preg_split('/\/(?![^\(]*\))/', $route);
-		$depth=count($route);
-		$matches=array();
-		switch ($depth) {
-			case 1:
-				# /users/
-			if(isset($routes[$route[0]]['callback'])){
-				return $routes[$route[0]]['callback'];
-			}
-			foreach($routes as $node=>$values){
-				# where node is something like /foo/
-				# there is no exact route, so we're using the handlebars
-				preg_match_all('/\{(.*)\}/', $node, $matches);
-				if(isset($matches[1][0])){
-					//we got handlebars
-					return array('callback'=>$routes[$node]['callback'], 'name'=>$matches[1][0], 'value'=>$route[count($route)-1]);
-				}
-			}
-			break;
-
-			case 2:
-				# /users/foo/
-			if(isset($routes[$route[0]][$route[1]]['callback'])){
-				return $routes[$route[0]][$route[1]]['callback'];
-			}
-			foreach($routes[$route[0]] as $node=>$values){
-				# where node is something like /foo/
-				# there is no exact route, so we're using the handlebars
-				preg_match_all('/\{(.*)\}/', $node, $matches);
-				if(isset($matches[1][0])){
-					//we got handlebars
-					return array('callback'=>$routes[$route[0]][$node]['callback'], 'name'=>$matches[1][0], 'value'=>$route[count($route)-1]);
-				}
-			}
-			break;
-
-			case 3:
-				# /users/foo/bar/
-			break;
-
-			case 4:
-				# /users/foo/bar/baz
-			 	# there has to be a better way
-			break;
-			default:
-			throw new Exception("Invalid Route Depth");
-			break;
-		}
-		return NULL;
-	}
-
 	private static function MapDepth($string, $array){
 		$keys = explode( '][', substr( $string, 1, -1 ) );
 		foreach( $keys as $key ) {
