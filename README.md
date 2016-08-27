@@ -1,4 +1,4 @@
-#Yuna v0.1.0
+#Yuna v0.2.0
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
 
@@ -8,8 +8,10 @@ I'm still squashing bugs and adding features, but if you'd like to add something
 3. Have fun!
 
 #Configuration
+
+###Server
 Make sure you're using Apache, or something that can handle .htaccess files. Point all requests to `index.php`, or whatever you're using as the base file.
-By default, Yuna takes routes through the GET parameter `request_url`. This will be configurable later.
+By default, Yuna takes routes through the GET parameter `request_url`. ~~This will be configurable later.~~ You can configure this through `Yuna::Config`
 
 Here's a sample one:
 ```
@@ -21,6 +23,21 @@ Here's a sample one:
 </IfModule>
 ```
 I think this works.
+
+###Yuna
+Hey you can configure things now! Just do:
+```
+Yuna::Configure(array('option\_name'=>'option\_value');
+```
+
+Valid option names are:
+`variable_delimiter`, which is an `array()` of the beginning delimiter, and ending. Default is `array('{', '}')`. It defines where Yuna should look for variables in the route, like `/foo/{bar}` would be default, or you can change it to `/foo/:bar:` if you wanted to. I don't recommend using alphanumeric characters (or slashes) because everything might explode. You can use brackets () but make sure to properly escape them: \(.
+
+`request_url`, which is where Yuna should get the request data route from. Default is `$_GET['request_url']`.
+
+`enable_meta`, a boolean that enables/disables the `yuna_meta` output. Default is `true`.
+
+`enable_warnings`, a boolean that enables/disables the `yuna_warnings` output. Default is `true`.
 
 #Usage
 
