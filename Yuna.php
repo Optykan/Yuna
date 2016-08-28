@@ -2,9 +2,13 @@
 require_once 'net/Request.php';
 class Yuna{
 	private static $routes=array();
-	private static $version='0.2.0';
+	private static $version='0.2.1';
 	private static $warnings=array();
-	private static $config=array('variable_delimiter'=>['{', '}'], 'request_url'=>$_GET['request_url'], 'enable_meta'=>true, 'enable_warnings'=>true );
+	private static $config=array();
+
+	public static function Init(){
+		self::$config=array('variable_delimiter'=>['{', '}'], 'request_url'=>$_GET['request_url'], 'enable_meta'=>true, 'enable_warnings'=>true );
+	}
 
 	private static function Warn($message){
 		array_push(self::$warnings, $message);
@@ -118,4 +122,5 @@ class Yuna{
 		}
 	}
 }
+Yuna::Init();
 ?>

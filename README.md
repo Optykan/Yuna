@@ -1,4 +1,4 @@
-#Yuna v0.2.0
+#Yuna v0.2.1
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
 
@@ -46,7 +46,7 @@ Valid option names are:
 In `index.php`, or your base file, do:
 ```
 Yuna::Route('/your/route/here', function(){
-	return 'Hello, World!';
+return 'Hello, World!';
 });
 ```
 
@@ -68,8 +68,8 @@ You wanna do more with Yuna? Of course you do. Let's try a semi-practical applic
 
 ```
 Yuna::Route('/users/{id}', function(Request $request){
-	$user_id=$request->getParam('id');
-	return $user_id;
+$user_id=$request->getParam('id');
+return $user_id;
 });
 ```
 
@@ -79,10 +79,10 @@ Anyways, the response here is:
 ```
 {
 	'response': {
-		'id': 123
-	},
-	'yuna_meta': ...
-	'yuna_warnings': ...
+	'id': 123
+},
+'yuna_meta': ...
+'yuna_warnings': ...
 }
 ```
 Yuna will take the variable name within the brackets, and will pass it to the `Request` object. You can access this variable with the `getParam` method.
