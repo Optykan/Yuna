@@ -5,8 +5,10 @@ require_once 'Yuna.php';
 Yuna::Route('/test/', function(Request $request, Response $response){
 	return '/test/';
 });
-Yuna::Route('/test/{foo}/{bar}', function(Request $request, Response $response){
-	return $request->getParam('foo');
+Yuna::Group('/api/bar', function(){
+	Yuna::Route('/test/{foo}/{bar}', function(Request $request, Response $response){
+		return $request->getParam('foo');
+	});
 });
 
 Yuna::Run();

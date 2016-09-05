@@ -3,11 +3,12 @@ require_once 'net/Request.php';
 require_once 'net/Response.php';
 class Yuna{
 	private static $routes=array();
-	private static $version='0.4.0';
+	private static $version='0.5.0';
 	private static $warnings=array();
 	private static $config=array();
 	private static $VAR_START;
 	private static $VAR_END;
+	private static $in_group=[];
 
 	public static function Init(){
 		self::$config=array('variable_delimiter'=>['{', '}'], 'request_url'=>$_GET['request_url'], 'enable_meta'=>true, 'enable_warnings'=>true );
@@ -75,7 +76,7 @@ class Yuna{
 		# thanks to http://stackoverflow.com/questions/7003559/use-strings-to-access-potentially-large-multidimensional-arrays
 	}
 
-	private static function BuildRoute(&$routes, $route, $callback, $depth){
+	private static function BuildRoute(&$routes, $route, &$callback, $depth){
 		$node=$route[$depth];
 
 		if(!isset($routes[$node]) || !is_array($routes[$node])){
@@ -94,8 +95,36 @@ class Yuna{
 		$route=trim($route, '/');
 
 		//split the route along slashes where the slashes aren't in the variable
-		$route=preg_split('/\/(?![^'.self::$VAR_START.']*'.self::$VAR_END.')/', $route);
+		$route=preg_split('/\/(?![^'.self::$VAR_START.']*'.self::$VAR_END.')/', $route, -1, PREG_SPLIT_NO_EMPTY);
+
+		//are we inside a group
+		if((bool)self::$in_group){
+			$count=count(self::$in_group);
+
+			//reverse the array so we push it back into the original order
+			while($count-->0){
+				array_unshift($route, self::$in_group[$count]);
+			}
+		}
 		self::BuildRoute(self::$routes, $route, $callback, 0);
+	}
+
+	public static function Group($prefix, $content){
+		$keys=preg_split('/\/(?![^'.self::$VAR_START.']*'.self::$VAR_END.')/', $prefix, -1, PREG_SPLIT_NO_EMPTY);
+		$count = count($keys);
+
+		for($i=0; $i<$count; $i++){
+			array_push(self::$in_group, $keys[$i]);
+		}
+
+		call_user_func($content);
+
+		for($i=0;$i<$count;$i++){
+			array_pop(self::$in_group);
+		}
+	}
+	public static function Prefix($prefix, $content){
+		self::Prefix($prefix, $content);
 	}
 
 	public static function Run(){

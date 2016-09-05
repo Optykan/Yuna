@@ -1,4 +1,4 @@
-#Yuna v0.4.0
+#Yuna v0.5.0
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
 
@@ -91,6 +91,51 @@ Yuna will take the variable name within the brackets, and will pass it to the `R
 
 ~~**Yuna does not currently support the addition of more than 1 variable. This might be fixed later.**~~
 Go crazy. This was fixed in version 0.3.0.
+
+###Route Prefixes
+
+Look you can group routes too! Simply put them into a:
+
+```
+Yuna::Group('/prefix/', function(){
+	Yuna::Route('/foo/bar/', function(Request $request, Response $response)){
+		return $response;
+	});
+});
+```
+
+The resulting route is `/prefix/foo/bar/`. You can also, of course, pass variables in the prefix like with a normal route:
+
+```
+Yuna::Group('/prefix/{foo}/', function(){
+	Yuna::Route('/bar/{baz}/', function(Request $request, Response $response)){
+		$foo=$request->getParam('foo');
+		$baz=$request->getParam('baz');
+		return $response;
+	});
+});
+```
+
+If you really wanted to, you could nest groups:
+
+```
+Yuna::Group('/prefix/', function(){
+	Yuna::Group('/inner/', function(){
+		Yuna::Route('/bar/', function(Request $request, Response $response){
+			return $response;
+		});
+	});
+	Yuna::Group('/inner2/', function(){
+		Yuna::Route('/baz/', function(Request $request, Response $response){
+			return $response;
+		});
+	});
+});
+```
+
+Look, now we have `/prefix/inner/bar/` and `/prefix/inner2/baz/` set up. As always, Yuna will first look for a matching route, then try to match variables to the path.
+
+You can also use `Yuna::Prefix()` as an alias.
 
 #Miscellaneous
 
