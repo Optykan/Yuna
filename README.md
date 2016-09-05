@@ -1,11 +1,30 @@
-#Yuna v0.5.0
+#Yuna v0.5.1
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
+
+See `index.php` for some demos
+
+#Contents
+- Installation
+- Configuration
+	- Server
+	- Yuna
+- Usage
+	- Creating a route
+	- Advanced routing
+	- Route prefixes (aka grouping)
+- Miscellaneous
+	- Request object
+	- Response object
 
 #Installation
 1. Download the repo
 2. `require 'path/to/Yuna.php'`
-3. Have fun!
+3. Configure everything.
+~~3.5. Cry~~
+4. Set up some routes
+5. `Yuna::Run()`
+6. Have fun!
 
 #Configuration
 
@@ -53,7 +72,7 @@ Yuna::Route('/your/route/here', function(Request $request, Response $response){
 ```
 
 The response when visiting `http://your.server/your/route/here` will be a `json_encode`d representation of ~~what is returned from that function~~ the data in the `Response` object.
-**Plase return a `Response` object. Otherwise, Yuna will respond with a default `Response` object.** You find this in `net/Response.php`.
+**Please return a `Response` object** Otherwise, Yuna will respond with a default `Response` object, setting the response to whatever is returned from your callback. You can find this in `net/Response.php`.
 
 In this case, the response would be:
 
@@ -92,7 +111,7 @@ Yuna will take the variable name within the brackets, and will pass it to the `R
 ~~**Yuna does not currently support the addition of more than 1 variable. This might be fixed later.**~~
 Go crazy. This was fixed in version 0.3.0.
 
-###Route Prefixes
+###Route Prefixes (aka grouping)
 
 Look you can group routes too! Simply put them into a:
 

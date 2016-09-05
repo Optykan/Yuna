@@ -3,7 +3,7 @@ require_once 'net/Request.php';
 require_once 'net/Response.php';
 class Yuna{
 	private static $routes=array();
-	private static $version='0.5.0';
+	private static $version='0.5.1';
 	private static $warnings=array();
 	private static $config=array();
 	private static $VAR_START;
