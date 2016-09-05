@@ -1,4 +1,4 @@
-#Yuna v0.3.0
+#Yuna v0.3.1
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
 

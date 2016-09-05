@@ -15,7 +15,7 @@ class Yuna{
 	}
 
 	public static function Config($config){
-		array_merge(self::$config, $config);
+		self::$config=array_merge(self::$config, $config);
 		self::$VAR_START=self::$config['variable_delimiter'][0];
 		self::$VAR_END  =self::$config['variable_delimiter'][1];
 	}
