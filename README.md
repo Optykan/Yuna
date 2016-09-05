@@ -27,10 +27,11 @@ I think this works.
 ###Yuna
 Hey you can configure things now! Just do:
 ```
-Yuna::Configure(array('option_name'=>'option_value');
+Yuna::Config(array('option_name'=>'option_value');
 ```
 
 Valid option names are:
+
 `variable_delimiter`, which is an `array` of the beginning delimiter, and ending. Default is `array('{', '}')`. It defines where Yuna should look for variables in the route definition. For example, in route `/foo/{bar}`, Yuna will look for `{bar}`. You can change it to `/foo/:bar:` by doing `'variable_delimiter'=>array(':', ':')` if you wanted to. I don't recommend using alphanumeric characters (or slashes) because everything might explode. You can use brackets `()` but make sure to properly escape them: `\(`.
 
 `request_url`, which is where Yuna should get the request data route from. Default is `$_GET['request_url']`.
