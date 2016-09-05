@@ -1,4 +1,4 @@
-#Yuna v0.2.1
+#Yuna v0.3.0
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
 
@@ -27,11 +27,11 @@ I think this works.
 ###Yuna
 Hey you can configure things now! Just do:
 ```
-Yuna::Configure(array('option\_name'=>'option\_value');
+Yuna::Configure(array('option_name'=>'option_value');
 ```
 
 Valid option names are:
-`variable_delimiter`, which is an `array()` of the beginning delimiter, and ending. Default is `array('{', '}')`. It defines where Yuna should look for variables in the route, like `/foo/{bar}` would be default, or you can change it to `/foo/:bar:` if you wanted to. I don't recommend using alphanumeric characters (or slashes) because everything might explode. You can use brackets () but make sure to properly escape them: \(.
+`variable_delimiter`, which is an `array` of the beginning delimiter, and ending. Default is `array('{', '}')`. It defines where Yuna should look for variables in the route definition. For example, in route `/foo/{bar}`, Yuna will look for `{bar}`. You can change it to `/foo/:bar:` by doing `'variable_delimiter'=>array(':', ':')` if you wanted to. I don't recommend using alphanumeric characters (or slashes) because everything might explode. You can use brackets `()` but make sure to properly escape them: `\(`.
 
 `request_url`, which is where Yuna should get the request data route from. Default is `$_GET['request_url']`.
 
@@ -46,7 +46,7 @@ Valid option names are:
 In `index.php`, or your base file, do:
 ```
 Yuna::Route('/your/route/here', function(){
-return 'Hello, World!';
+	return 'Hello, World!';
 });
 ```
 
@@ -60,7 +60,7 @@ In this case, the response would be:
 	'yuna_warnings': ...
 }
 ```
-Yeah, some meta stuff gets dumped with it too. You'll be able to turn this off in future versions.
+Yeah, some meta stuff gets dumped with it too. ~~You'll be able to turn this off in future versions~~. See `Yuna::Config` for how to turn this off.
 
 ###Advanced routing
 
@@ -68,26 +68,27 @@ You wanna do more with Yuna? Of course you do. Let's try a semi-practical applic
 
 ```
 Yuna::Route('/users/{id}', function(Request $request){
-$user_id=$request->getParam('id');
-return $user_id;
+	$user_id=$request->getParam('id');
+	return $user_id;
 });
 ```
 
-If a user visits `http://your.server/users/123`, Yuna will first check to see if a route for `/users/bar` is configured. If it's not, it'll see if a route matching `/users/{VARIABLE_NAME}` is configured. Since we have `/users/{id}` configured, Yuna will run the callback for that route. The `$request` parameter is a `Request` object (find this in `/net/Request.php`), and the available methods can be seen below.
+If a user visits `http://your.server/users/123`, Yuna will first check to see if a route for `/users/123` is configured. If it's not, it'll see if a route matching `/users/{VARIABLE_NAME}` is configured. Since we have `/users/{id}` configured, Yuna will run the callback for that route. The `$request` parameter is a `Request` object (find this in `/net/Request.php`), and the available methods can be seen below.
 
 Anyways, the response here is:
 ```
 {
 	'response': {
-	'id': 123
-},
-'yuna_meta': ...
-'yuna_warnings': ...
+		'id': 123
+	},
+	'yuna_meta': ...
+	'yuna_warnings': ...
 }
 ```
 Yuna will take the variable name within the brackets, and will pass it to the `Request` object. You can access this variable with the `getParam` method.
 
-**Yuna does not currently support the addition of more than 1 variable. This might be fixed later.**
+~~**Yuna does not currently support the addition of more than 1 variable. This might be fixed later.**~~
+Go crazy. This was fixed in version 0.3.0.
 
 #Miscellaneous
 

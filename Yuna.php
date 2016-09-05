@@ -5,9 +5,19 @@ class Yuna{
 	private static $version='0.2.1';
 	private static $warnings=array();
 	private static $config=array();
+	private static $VAR_START;
+	private static $VAR_END;
 
 	public static function Init(){
 		self::$config=array('variable_delimiter'=>['{', '}'], 'request_url'=>$_GET['request_url'], 'enable_meta'=>true, 'enable_warnings'=>true );
+		self::$VAR_START='{';
+		self::$VAR_END  ='}';
+	}
+
+	public static function Config($config){
+		array_merge(self::$config, $config);
+		self::$VAR_START=self::$config['variable_delimiter'][0];
+		self::$VAR_END  =self::$config['variable_delimiter'][1];
 	}
 
 	private static function Warn($message){
@@ -29,20 +39,39 @@ class Yuna{
 		exit(0);
 	}
 
-	private static function MapDepth($string, $array){
-		$keys = explode( '][', substr( $string, 1, -1 ) );
-		foreach( $keys as $key ) {
-			if(!isset($array[$key])){
-				return NULL;
-			}
-			$array = $array[$key];
-		}
-		return $array;
-		# thanks to http://stackoverflow.com/questions/7003559/use-strings-to-access-potentially-large-multidimensional-arrays
-	}
+	private static function MapDepth($keys, $array){
+		$encoded=array();
 
-	public static function Config($config){
-		array_merge(self::$config, $config);
+		foreach( $keys as $key ) {
+			if(strpos($key, self::$VAR_START) !== false || !isset($array[$key])){
+				//this should have stellar runtime
+				$length = count($array);
+				$i=0;
+
+				foreach($array as $index=>$value){
+					if(strpos($index, self::$VAR_START) !== false){
+						//find an instance of {bar} or whatever user is using
+						$encoded[preg_replace('/'.self::$VAR_START.'|'.self::$VAR_END.'/', '', $index)]=$key;
+						$array = $array[$index];
+						break;
+					}
+					$i++;
+				}
+				if($i==$length){
+					return NULL;
+				}else{
+					$i=0;
+				}
+			}else{
+				$array = $array[$key];
+			}
+		}
+		if(!isset($array['yuna_callback'])){
+			self::Warn('No callback found for route /'.implode('/', $keys).'/');
+			return NULL;
+		}
+		return array('yuna_callback'=>$array['yuna_callback'], 'yuna_vars'=>$encoded);
+		# thanks to http://stackoverflow.com/questions/7003559/use-strings-to-access-potentially-large-multidimensional-arrays
 	}
 
 	private static function BuildRoute(&$routes, $route, $callback, $depth){
@@ -56,11 +85,7 @@ class Yuna{
 			$depth++;
 			self::BuildRoute($routes[$node], $route, $callback, $depth);
 		}else{
-			if(strpos($node, self::$config['variable_delimiter'][0])!==false){
-				$routes[$node]['yuna_callback']=array('callback'=>$callback, 'name'=>preg_replace('/'.self::$config['variable_delimiter'][0].'|'.self::$config['variable_delimiter'][1].'/', '', $node));
-			}else{
-				$routes[$node]['yuna_callback']=$callback;
-			}	
+			$routes[$node]['yuna_callback']=$callback;
 		}
 	}
 
@@ -72,53 +97,26 @@ class Yuna{
 
 	public static function Run(){
 		$route=trim(self::$config['request_url'], '/');
-		$routeAsString='['.preg_replace('/\//', '][', $route).']';
 		$routeAsArray=explode('/', $route);
 
-		$endpoint=self::MapDepth($routeAsString, self::$routes);
+		$endpoint=self::MapDepth($routeAsArray, self::$routes);
 
-		if(is_null($endpoint) || !isset($endpoint['yuna_callback'])){ //the endpoint we're looking for was not found
-			$var=array_pop($routeAsArray); //pop the last element off in hopes that it's just a variable
-			$routeAsString='['.implode('][', $routeAsArray).']'; //implode it into a string
-			$endpoint=self::MapDepth($routeAsString, self::$routes); //try to map it again
-
-
-			if(is_null($endpoint)){
-				//still no endpoint found
-				self::Warn('Route '.$route.' has no callback');
-				self::Response(NULL);
+		if(!is_null($endpoint)){
+			if($endpoint['yuna_vars']){
+				$request=new Request(getallheaders(), $endpoint['yuna_vars']);
+			}else{
+				$request=new Request(getallheaders(), NULL);
 			}
-
-			foreach($endpoint as $node=>$callback){
-				if(strpos($node, self::$config['variable_delimiter'][0])!==false){
-					//we have a node with handlebars
-					if(is_array($callback['yuna_callback'])){
-						$request=new Request(getallheaders(), array($callback['yuna_callback']['name']=>$var));
-						$cResponse=$callback['yuna_callback']['callback']($request);
-						if(!isset($cResponse)){
-							self::Warn('Route '.$route.' callback returned NULL');
-						}
-						self::Response($cResponse);
-					}else{
-						$request=new Request(getallheaders(), NULL);
-						$cResponse=$callback['yuna_callback']($request);
-						if(!isset($cResponse)){
-							self::Warn('Route '.$route.' callback returned NULL');
-						}
-						self::Response($cResponse);
-					}
-				}
-			}
-			self::Warn('Route '.$route.' has no callback');
-			self::Response(NULL);
-		}
-		else{
-			$request=new Request(getallheaders(), NULL);
 			$cResponse=$endpoint['yuna_callback']($request);
+
 			if(!isset($cResponse)){
-				self::Warn('Route '.$route.' callback returned NULL');
+				self::Warn('Route /'.$route.'/ callback returned NULL');
 			}
 			self::Response($cResponse);
+
+		}else{
+			self::Warn('No route found for /'.$route.'/');
+			self::Response(NULL);
 		}
 	}
 }
