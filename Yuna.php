@@ -1,8 +1,9 @@
 <?php 
 require_once 'net/Request.php';
+require_once 'net/Response.php';
 class Yuna{
 	private static $routes=array();
-	private static $version='0.2.1';
+	private static $version='0.4.0';
 	private static $warnings=array();
 	private static $config=array();
 	private static $VAR_START;
@@ -24,18 +25,18 @@ class Yuna{
 		array_push(self::$warnings, $message);
 	}
 
-	private static function Response($data){
+	private static function Response($response){
 		header('Content-Type: application/json');
-		$response=array('response'=>$data);
 
 		if(self::$config['enable_meta']===true){
-			$yuna_meta=array('time'=>time(), 'yuna_version'=>self::$version, 'count'=>count($data));
-			$response['yuna_meta']=$yuna_meta;
+			$yuna_meta=array('time'=>time(), 'yuna_version'=>self::$version, 'count'=>$response->getCount());
+			$response->setMeta($yuna_meta);
 		}
 		if(self::$config['enable_warnings']==true){
-			$response['yuna_warnings']=self::$warnings;
+			$response->setWarnings(self::$warnings);
 		}
-		echo json_encode($response);
+		
+		$response->sendData();
 		exit(0);
 	}
 
@@ -91,11 +92,20 @@ class Yuna{
 
 	public static function Route($route, $callback){
 		$route=trim($route, '/');
-		$route=preg_split('/\/(?![^\(]*\))/', $route);
+
+		//split the route along slashes where the slashes aren't in the variable
+		$route=preg_split('/\/(?![^'.self::$VAR_START.']*'.self::$VAR_END.')/', $route);
 		self::BuildRoute(self::$routes, $route, $callback, 0);
 	}
 
 	public static function Run(){
+		
+		$response=new Response();
+
+		if(!self::$config['request_url']){
+			self::Warn('No route passed.');
+			self::Response($response);
+		}
 		$route=trim(self::$config['request_url'], '/');
 		$routeAsArray=explode('/', $route);
 
@@ -107,16 +117,23 @@ class Yuna{
 			}else{
 				$request=new Request(getallheaders(), NULL);
 			}
-			$cResponse=$endpoint['yuna_callback']($request);
 
-			if(!isset($cResponse)){
-				self::Warn('Route /'.$route.'/ callback returned NULL');
+			$cResponse=call_user_func($endpoint['yuna_callback'], $request, $response);
+			
+			if($cResponse !== false){
+				if(!($cResponse instanceof Response)){
+					self::Warn('Route /'.$route.'/ did not return a Response object. Yuna will use the return value instead.');
+					$response->setResponse($cResponse);
+					self::Response($response);
+				}
+				self::Response($cResponse);
+			}else{
+				self::Warn('Route /'.$route.'/ callback did not return a Response object');
+				self::Response($response);
 			}
-			self::Response($cResponse);
-
 		}else{
 			self::Warn('No route found for /'.$route.'/');
-			self::Response(NULL);
+			self::Response($response);
 		}
 	}
 }
