@@ -96,7 +96,6 @@ class Yuna{
 
 		//split the route along slashes where the slashes aren't in the variable
 		$route=preg_split('/\/(?![^'.self::$VAR_START.']*'.self::$VAR_END.')/', $route, -1, PREG_SPLIT_NO_EMPTY);
-		var_dump($route);
 
 		//are we inside a group
 		if((bool)self::$in_group){
@@ -129,7 +128,6 @@ class Yuna{
 	}
 
 	public static function Run(){
-		// var_dump(self::$routes);
 		
 		$response=new Response();
 
