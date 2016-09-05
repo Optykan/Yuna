@@ -1,9 +1,6 @@
 <?php 
 require_once 'Yuna.php';
 
-//configure Yuna to search for :bar: instead of {bar} in the route name
-Yuna::Config(array('variable_delimiter'=>[':',':']));
-
 //a basic route
 Yuna::Route('/test/', function(Request $request, Response $response){
 	$response->setResponse('/test/');
@@ -14,14 +11,14 @@ Yuna::Route('/test/', function(Request $request, Response $response){
 Yuna::Group('/api', function(){
 	//nested groups
 	Yuna::Group('/bar', function(){
-		Yuna::Route('/test/:foo:/', function(Request $request, Response $response){
+		Yuna::Route('/test/{foo}/', function(Request $request, Response $response){
 			//set the response to be the :foo: variable in the url
 			$response->setResponse($request->getParam('foo'));
 			return $response;
 		});
 	});
 	Yuna::Group('/foo', function(){
-		Yuna::Route('/test/:bar:/', function(Request $request, Response $response){
+		Yuna::Route('/test/{bar}/', function(Request $request, Response $response){
 
 			//change the HTTP response code
 			$response->setStatus(301);

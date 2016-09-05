@@ -1,4 +1,4 @@
-#Yuna v0.5.1
+#Yuna v0.5.2
 Yuna is a lightweight PHP API framework (pfft, like we needed any more) that you can do things with.
 I'm still squashing bugs and adding features, but if you'd like to add something open an issue ~~or make it yourself and open a pull request you lazy piece of~~ and I'll get to it (eventually)
 
@@ -51,7 +51,7 @@ Yuna::Config(array('option_name'=>'option_value');
 
 Valid option names are:
 
-`variable_delimiter`, which is an `array` of the beginning delimiter, and ending. Default is `array('{', '}')`. It defines where Yuna should look for variables in the route definition. For example, in route `/foo/{bar}`, Yuna will look for `{bar}`. You can change it to `/foo/:bar:` by doing `'variable_delimiter'=>array(':', ':')` if you wanted to. I don't recommend using alphanumeric characters (or slashes) because everything might explode. You can use brackets `()` but make sure to properly escape them: `\(`.
+`variable_delimiter`, which is an `array` of the beginning delimiter, and ending. Default is `array('{', '}')`. It defines where Yuna should look for variables in the route definition. For example, in route `/foo/{bar}`, Yuna will look for `{bar}`. ~~You can change it to `/foo/:bar:` by doing `'variable_delimiter'=>array(':', ':')` if you wanted to. I don't recommend using alphanumeric characters (or slashes) because everything might explode. You can use brackets `()` but make sure to properly escape them: `\(`.~~ Literally everything except `{}` is broken so I'll fix it later.
 
 `request_url`, which is where Yuna should get the request data route from. Default is `$_GET['request_url']`.
 
